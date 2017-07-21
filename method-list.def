@@ -1,0 +1,6 @@
+
+//DEFINE(name, class_name, method_name, siganture, callback, index)
+
+DEFINE(app_Activity_onCreate, "android/app/Activity", "onCreate", "(Landroid/os/Bundle;)V", log_callback, 0)
+DEFINE(app_Activity_onDestroy, "android/app/Activity", "onDestroy", "()V", log_callback, 1)
+
