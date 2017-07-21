@@ -123,9 +123,6 @@ extern "C" void call_user_callback(MethodItem* pMethodItem,
 
     uint32_t *reference_args = (uint32_t*)args;
     uint32_t *top_handles = (uint32_t*)(top_handle_scope + 1);
-    for (int i = 0; i < pMethodItem->object_arg_count; i++) {
-        top_handles[i+1] = *(reference_args + 1 + pMethodItem->object_arg_offsets[i]);//skip this
-    }
     if (pMethodItem->isStatic) {
         //push the class
         ArtMethod * method = (ArtMethod*)(pMethodItem->methodId);
@@ -133,6 +130,11 @@ extern "C" void call_user_callback(MethodItem* pMethodItem,
     } else {
         top_handles[0] = reference_args[0];
     }
+
+    for (int i = 0; i < pMethodItem->object_arg_count; i++) {
+        top_handles[i+1] = *(reference_args + pMethodItem->object_arg_offsets[i]);//skip this
+    }
+
 
     pThread->PushHandleScope(top_handle_scope);
     
@@ -212,7 +214,7 @@ void call_original_entry(MethodItem* pMethodItem, void* context, void* pthread, 
     }
     for (int i = 1; i < ref_count; i++) {
         ref_args[pMethodItem->object_arg_offsets[i-1]]
-            = top_handle[i];
+             = top_handle[i];
     }
 
     pThread->PushManagedStackFragment(&managed_stack);

@@ -178,7 +178,7 @@ static jobject toObject(JNIEnv* env, char type, jvalue value) {
 }
 
 
-MethodArgs::MethodArgs(JNIEnv* e, MethodItem* pMethodItem, jvalue* values, int arg_count) {
+MethodArgs::MethodArgs(JNIEnv* e, MethodItem* pMethodItem, const jvalue* values, int arg_count) {
     env = e;
     //create method object 
     method = env->ToReflectedMethod(pMethodItem->ownerClass, pMethodItem->methodId, pMethodItem->isStatic);

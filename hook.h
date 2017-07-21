@@ -53,7 +53,7 @@ struct MethodArgs {
     jobject method;
     jobjectArray args;
 
-    MethodArgs(JNIEnv* env, MethodItem* pMethodItem, jvalue* values, int count);
+    MethodArgs(JNIEnv* env, MethodItem* pMethodItem, const jvalue* values, int count);
     ~MethodArgs();
 };
 

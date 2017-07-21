@@ -29,29 +29,30 @@ struct JavaLangException {
     {}
 };
 
-struct JavaLangObject {
-    JClass       clazz;
-    JConstructor ctr;
+struct ZygoteInit {
+    JClass               clazz;
+    JMethod<void, true>  myLog;
 
-    JavaLangObject(JNIEnv* env)
-     : clazz(env, "java/lang/Object")
-     , ctr(env, clazz, "()V")
+    ZygoteInit(JNIEnv* env)
+     : clazz(env, "com/android/internal/os/ZygoteInit")
+     , myLog(env, clazz, "myLog", "(Ljava/lang/reflect/Method;[Ljava/lang/Object;)V")
     {}
 };
 
+
 static JLazyInstance<AndroidUtilLog> android_util_Log;
 static JLazyInstance<JavaLangException> java_lang_Exception;
-static JLazyInstance<JavaLangObject> java_lang_Object;
+static JLazyInstance<ZygoteInit> zygoteInit;
 
 extern "C" int _enable_log_stack;
 extern "C" void log_managed_stack(const char*, void*);
 
-void log_callback(JNIEnv* env, MethodItem *methodItem, void* context, const jvalue* /*args*/, int /*count*/, void* pthread, void* result) {
+void log_callback(JNIEnv* env, MethodItem *methodItem, void* context, const jvalue* args, int count, void* pthread, void* result) {
     struct timeval tv_start, tv_end;
 
     android_util_Log.ensureInitialized(env);
     java_lang_Exception.ensureInitialized(env);
-    //java_lang_Object.ensureInitialized(env);
+    zygoteInit.ensureInitialized(env);
 
     gettimeofday(&tv_start, NULL);
 
@@ -59,6 +60,9 @@ void log_callback(JNIEnv* env, MethodItem *methodItem, void* context, const jval
     call_original_entry(methodItem, context, pthread, result);
 
     //log_managed_stack("after original", pthread);
+
+    MethodArgs mthArgs(env, methodItem, args, count);
+    zygoteInit->myLog(env, NULL, mthArgs.method, mthArgs.args);
 
 
     gettimeofday(&tv_end, NULL);
