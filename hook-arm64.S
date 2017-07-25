@@ -244,10 +244,13 @@ hook_entry:
     mov PThreadSelf, PThreadBack
     mov sp, x28
 
+    ldr x8, [PThreadSelf, #THREAD_EXCEPTION_OFFSET]
+    cbnz x8, 1f
+
 #if PLATFORM_SDK_VERSION >= 24
     ldr x19,      [sp, #80]
 #else
-    ldr x19,      [sp, #72]
+    ldp PThreadSelf, x19, [sp, #72]
 #endif
 
     ldp d8, d9,   [sp, #_FP_OFF(8)]
@@ -263,8 +266,6 @@ hook_entry:
     ldr x30,      [sp, #168]
     add sp, sp, #176
 
-    ldr x8, [PThreadSelf, #THREAD_EXCEPTION_OFFSET]
-    cbnz x8, 1f
     ret
 1:
     // exception

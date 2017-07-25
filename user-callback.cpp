@@ -62,7 +62,7 @@ void log_callback(JNIEnv* env, MethodItem *methodItem, void* context, const jval
     //log_managed_stack("after original", pthread);
 
     MethodArgs mthArgs(env, methodItem, args, count);
-    zygoteInit->myLog(env, NULL, mthArgs.method, mthArgs.args);
+    zygoteInit->myLog(env, zygoteInit->clazz.clazz, mthArgs.method, mthArgs.args);
 
 
     gettimeofday(&tv_end, NULL);
@@ -71,7 +71,7 @@ void log_callback(JNIEnv* env, MethodItem *methodItem, void* context, const jval
     char szbuff[512];
     sprintf(szbuff, "%s.%s.%s took %dms", methodItem->className, methodItem->methodName, methodItem->methodSignature, 
             (int)((tv_end.tv_sec - tv_start.tv_sec) * 1000 + (tv_end.tv_usec - tv_start.tv_usec) / 1000));
-    android_util_Log->i(env, NULL, "MYLOG", (const char*)szbuff);
+    android_util_Log->i(env, android_util_Log->clazz.clazz, "MYLOG", (const char*)szbuff);
     //log_managed_stack("after log", pthread);
 
     jobject exception = java_lang_Exception->ctr(env);
