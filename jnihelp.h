@@ -266,12 +266,18 @@ struct JConstructor {
 
 template<typename TJ>
 struct JLazyInstance {
+    pthread_mutex_t mutex;
     TJ * instance;
-    JLazyInstance() : instance(NULL) { }
+    JLazyInstance() : instance(NULL) {
+    	pthread_mutex_init(&mutex, NULL);
+    }
 
     void ensureInitialized(JNIEnv *env) {
         if (!instance) {
-            instance = new TJ(env);
+            pthread_mutex_lock(&mutex);
+            if (!instance)
+	        instance = new TJ(env);
+            pthread_mutex_unlock(&mutex);
         }
     }
 

@@ -165,7 +165,7 @@ DEF_PRIMITYPE(Long, jlong, J)
 
 static jobject toObject(JNIEnv* env, char type, jvalue value) {
     switch(type) {
-    case 'L': return value.l;
+    case 'L' : case '[': return value.l;
     case 'D': return DoubleValue::of(env, value.d);
     case 'J': return LongValue::of(env, value.j);
     case 'F': return FloatValue::of(env, value.f);

@@ -25,7 +25,7 @@ static bool createShorty(MethodItem* methodItem) {
 
     while (*signature && *signature !=')') {
         szShorty[idx++] = *signature;
-        if (*signature == 'L') {
+        if (*signature == 'L' || *signature == '[') {
             while(*signature && *signature != ';' && *signature != ')') {
                 signature ++;
             }
@@ -166,7 +166,7 @@ static bool calcArgSize(MethodItem* methodItem) {
         case 'J':
             size += 8;
             break;
-        case 'L':
+        case 'L': case '[':
             methodItem->object_arg_offsets[obj_arg_count] = size/4;
             obj_arg_count ++;
         default:

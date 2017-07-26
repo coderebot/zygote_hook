@@ -164,7 +164,7 @@ extern "C" void call_user_callback(MethodItem* pMethodItem,
                     arg_values[idx++].j = *((jlong*)ref_args);
                     ref_args += 2;
                     break;
-                case 'L':
+                case 'L': case '[':
                     arg_values[idx++].l = (jobject)(top_handles + 1 + obj_ref_idx);
                     obj_ref_idx ++;
                     ref_args ++;
