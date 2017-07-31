@@ -187,8 +187,15 @@ MethodArgs::MethodArgs(JNIEnv* e, MethodItem* pMethodItem, const jvalue* values,
         args = NULL;
     } else {
         args = env->NewObjectArray(arg_count, get_object_class(e), 0);
-        const char* shorty = pMethodItem->shorty+1;
-        for (int i = 0; i < arg_count; i++) {
+        const char* shorty = pMethodItem->shorty;
+        int i = 0;
+        if (!pMethodItem->isStatic) {
+            env->SetObjectArrayElement(args, 0, values[0].l);
+            i ++;
+        } else {
+            shorty ++; //skip the result
+        }
+        for (; i < arg_count; i++) {
             env->SetObjectArrayElement(args, i, toObject(e, shorty[i], values[i]));
         }
     }

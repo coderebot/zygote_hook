@@ -42,6 +42,7 @@ using art::StackReference;
 #if PLATFORM_SDK_VERSION < 24
 using art::InterpreterEntryPoints;
 #endif
+using art::JNIEnvExt;
 
 #define CALLEE_SAVE_METHOD_TYPE Runtime::kSaveAll
 
@@ -137,6 +138,10 @@ extern "C" void call_user_callback(MethodItem* pMethodItem,
 
 
     pThread->PushHandleScope(top_handle_scope);
+    //push the local ref cookie
+    JNIEnvExt * env = pThread->GetJniEnv();
+    uint32_t saved_local_ref_cookie = env->local_ref_cookie;
+    env->local_ref_cookie = env->locals.GetSegmentState();
     
     if (pMethodItem->callback) {
         int arg_count = strlen(pMethodItem->shorty) - 1;
@@ -165,7 +170,11 @@ extern "C" void call_user_callback(MethodItem* pMethodItem,
                     ref_args += 2;
                     break;
                 case 'L': case '[':
-                    arg_values[idx++].l = (jobject)(top_handles + 1 + obj_ref_idx);
+                    if (top_handles[1 + obj_ref_idx] == 0) {
+                        arg_values[idx++].l = 0;
+                    } else {
+                        arg_values[idx++].l = (jobject)(top_handles + 1 + obj_ref_idx);
+                    }
                     obj_ref_idx ++;
                     ref_args ++;
                     break;
@@ -185,9 +194,11 @@ extern "C" void call_user_callback(MethodItem* pMethodItem,
         context.args = args;
         context.top_handle_scope = top_handle_scope;
 
-        cb(pThread->GetJniEnv(), pMethodItem, &context, arg_values, arg_count, (void*)pThread, result);
+        cb(env, pMethodItem, &context, arg_values, arg_count, (void*)pThread, result);
     }
 
+    env->locals.SetSegmentState(env->local_ref_cookie);
+    env->local_ref_cookie = saved_local_ref_cookie;
     pThread->PopHandleScope();
 
     handle_deoptimize_exception(pThread);
