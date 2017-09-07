@@ -299,7 +299,7 @@ call_original_method:
     ENTRY_CALL 1
 
     // alloc the size of args
-    ldr x8, [PMethodItem, #METHOD_ITEM_ARG_SIZE]
+    ldr w8, [PMethodItem, #METHOD_ITEM_ARG_SIZE]
     SHOW_XREG 8
     add x9, x8, STACK_REFERENCE_SIZE
     sub x9, sp, x9

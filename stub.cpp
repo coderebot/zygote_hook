@@ -218,10 +218,8 @@ void call_original_entry(MethodItem* pMethodItem, void* context, void* pthread, 
     uint32_t * ref_args = (uint32_t*)(ctx->args);
     int ref_count = ctx->top_handle_scope->NumberOfReferences();
     uint32_t * top_handle = (uint32_t*)(ctx->top_handle_scope + 1);
-    int idx = 0;
     if (!pMethodItem->isStatic) {
         ref_args[0] = top_handle[0];
-        idx ++;
     }
     for (int i = 1; i < ref_count; i++) {
         ref_args[pMethodItem->object_arg_offsets[i-1]]
