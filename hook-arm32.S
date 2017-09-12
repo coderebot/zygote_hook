@@ -237,7 +237,7 @@ call_original_method:
     cmp r3, #'D'
     bne 1f
     vstr s0, [r7]
-    vstr s1, [r7, 4]
+    vstr s1, [r7, #4]
     b   3f
 1:
     cmp r3, #'F'
@@ -246,7 +246,7 @@ call_original_method:
     b   3f
 2:
     str r0, [r7]
-    str r1, [r7]
+    str r1, [r7, #4]
 3:
     mov sp, r10
 
